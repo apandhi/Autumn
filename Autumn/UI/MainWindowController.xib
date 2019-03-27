@@ -1,0 +1,222 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<document type="com.apple.InterfaceBuilder3.Cocoa.XIB" version="3.0" toolsVersion="14460.31" targetRuntime="MacOSX.Cocoa" propertyAccessControl="none" useAutolayout="YES" customObjectInstantitationMethod="direct">
+    <dependencies>
+        <deployment identifier="macosx"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.CocoaPlugin" version="14460.31"/>
+        <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
+    </dependencies>
+    <objects>
+        <customObject id="-2" userLabel="File's Owner" customClass="MainWindowController">
+            <connections>
+                <outlet property="consoleContainer" destination="I2z-nk-Gjr" id="rAr-yf-5U6"/>
+                <outlet property="docsContainer" destination="hgk-02-vfI" id="Ukt-MQ-vx2"/>
+                <outlet property="editorContainer" destination="CDq-8P-ETh" id="djn-v7-ruz"/>
+                <outlet property="innerSplit" destination="vok-eX-fJ0" id="zz1-Wo-YBw"/>
+                <outlet property="mainSplit" destination="Ug7-s4-UFg" id="yYZ-I4-iV0"/>
+                <outlet property="playbookButton" destination="sKF-9y-Px2" id="5Zf-Y0-Aub"/>
+                <outlet property="searchField" destination="fbL-aV-1NV" id="Xfk-aA-FFN"/>
+                <outlet property="spinner" destination="Zwf-Wg-GnL" id="wM5-jO-3gc"/>
+                <outlet property="startStopButton" destination="Jco-td-vg5" id="fYG-XQ-zrI"/>
+                <outlet property="waitingLabel" destination="KpK-Jx-fKo" id="bgT-CH-m26"/>
+                <outlet property="waitingView" destination="BHp-TD-RsO" id="gy8-dj-03Q"/>
+                <outlet property="window" destination="F0z-JX-Cv5" id="gIp-Ho-8D9"/>
+            </connections>
+        </customObject>
+        <customObject id="-1" userLabel="First Responder" customClass="FirstResponder"/>
+        <customObject id="-3" userLabel="Application" customClass="NSObject"/>
+        <window title="Autumn" allowsToolTipsWhenApplicationIsInactive="NO" autorecalculatesKeyViewLoop="NO" releasedWhenClosed="NO" visibleAtLaunch="NO" frameAutosaveName="mainwindow" animationBehavior="default" titleVisibility="hidden" id="F0z-JX-Cv5">
+            <windowStyleMask key="styleMask" titled="YES" closable="YES" miniaturizable="YES" resizable="YES"/>
+            <windowPositionMask key="initialPositionMask" topStrut="YES" bottomStrut="YES"/>
+            <rect key="contentRect" x="196" y="442" width="800" height="600"/>
+            <rect key="screenRect" x="0.0" y="0.0" width="1920" height="1177"/>
+            <value key="minSize" type="size" width="400" height="300"/>
+            <view key="contentView" wantsLayer="YES" id="se5-gp-TjO">
+                <rect key="frame" x="0.0" y="0.0" width="800" height="600"/>
+                <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                <subviews>
+                    <splitView arrangesAllSubviews="NO" dividerStyle="thin" vertical="YES" translatesAutoresizingMaskIntoConstraints="NO" id="Ug7-s4-UFg">
+                        <rect key="frame" x="0.0" y="0.0" width="800" height="600"/>
+                        <subviews>
+                            <splitView fixedFrame="YES" arrangesAllSubviews="NO" dividerStyle="thin" id="vok-eX-fJ0">
+                                <rect key="frame" x="0.0" y="0.0" width="455" height="600"/>
+                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+                                <subviews>
+                                    <customView id="CDq-8P-ETh">
+                                        <rect key="frame" x="0.0" y="0.0" width="455" height="473"/>
+                                        <autoresizingMask key="autoresizingMask"/>
+                                        <constraints>
+                                            <constraint firstAttribute="width" relation="greaterThanOrEqual" constant="300" id="FMB-AX-fdc"/>
+                                            <constraint firstAttribute="height" relation="greaterThanOrEqual" constant="200" id="J4d-ex-HXw"/>
+                                        </constraints>
+                                    </customView>
+                                    <customView id="I2z-nk-Gjr">
+                                        <rect key="frame" x="0.0" y="474" width="455" height="126"/>
+                                        <autoresizingMask key="autoresizingMask"/>
+                                        <constraints>
+                                            <constraint firstAttribute="width" relation="greaterThanOrEqual" constant="200" id="Asc-Z6-dn7"/>
+                                            <constraint firstAttribute="height" relation="greaterThanOrEqual" constant="100" id="YMp-Qh-Bpk"/>
+                                        </constraints>
+                                    </customView>
+                                </subviews>
+                                <holdingPriorities>
+                                    <real value="250"/>
+                                    <real value="250"/>
+                                </holdingPriorities>
+                            </splitView>
+                            <customView id="hgk-02-vfI">
+                                <rect key="frame" x="456" y="0.0" width="344" height="600"/>
+                                <autoresizingMask key="autoresizingMask"/>
+                                <constraints>
+                                    <constraint firstAttribute="height" relation="greaterThanOrEqual" constant="200" id="Tml-yy-gkL"/>
+                                    <constraint firstAttribute="width" relation="greaterThanOrEqual" constant="333" id="xsb-6a-CYa"/>
+                                </constraints>
+                            </customView>
+                        </subviews>
+                        <holdingPriorities>
+                            <real value="250"/>
+                            <real value="250"/>
+                        </holdingPriorities>
+                    </splitView>
+                </subviews>
+                <constraints>
+                    <constraint firstItem="Ug7-s4-UFg" firstAttribute="centerY" secondItem="se5-gp-TjO" secondAttribute="centerY" id="GTt-xL-FTb"/>
+                    <constraint firstItem="Ug7-s4-UFg" firstAttribute="centerX" secondItem="se5-gp-TjO" secondAttribute="centerX" id="He5-p7-eUp"/>
+                    <constraint firstItem="Ug7-s4-UFg" firstAttribute="width" secondItem="se5-gp-TjO" secondAttribute="width" id="Qa8-Ou-Jz3"/>
+                    <constraint firstItem="Ug7-s4-UFg" firstAttribute="height" secondItem="se5-gp-TjO" secondAttribute="height" id="yfA-NN-JW2"/>
+                </constraints>
+            </view>
+            <toolbar key="toolbar" implicitIdentifier="8CB71235-140B-46FF-9F27-2EB67333A663" centeredItem="2eX-Ct-HEO" autosavesConfiguration="NO" allowsUserCustomization="NO" displayMode="iconOnly" sizeMode="regular" id="Czj-Qr-Eay">
+                <allowedToolbarItems>
+                    <toolbarItem implicitItemIdentifier="2EA16E26-6131-41BC-A0F0-71BAE75AE8A4" explicitItemIdentifier="fixIssues" label="Fix Issues" paletteLabel="Fix Issues" image="IssuesButtonTemplate" id="nhd-Pf-w7D">
+                        <nil key="toolTip"/>
+                        <size key="minSize" width="36" height="24"/>
+                        <size key="maxSize" width="36" height="24"/>
+                        <button key="view" verticalHuggingPriority="750" id="jLC-5f-jVF">
+                            <rect key="frame" x="12" y="14" width="36" height="24"/>
+                            <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+                            <buttonCell key="cell" type="roundTextured" bezelStyle="texturedRounded" image="IssuesButtonTemplate" imagePosition="only" alignment="center" alternateImage="IssuesButtonTemplate" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="vwr-wy-98A">
+                                <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
+                                <font key="font" metaFont="system"/>
+                            </buttonCell>
+                        </button>
+                        <connections>
+                            <action selector="fixIssues:" target="-2" id="wFk-fh-HWb"/>
+                        </connections>
+                    </toolbarItem>
+                    <toolbarItem implicitItemIdentifier="E0844B94-85B1-4E82-86BD-8883F100FD85" explicitItemIdentifier="playPause" label="Start/Stop Scripts" paletteLabel="Start/Stop Scripts" id="2eX-Ct-HEO">
+                        <nil key="toolTip"/>
+                        <size key="minSize" width="71" height="23"/>
+                        <size key="maxSize" width="71" height="24"/>
+                        <segmentedControl key="view" verticalHuggingPriority="750" id="Jco-td-vg5">
+                            <rect key="frame" x="16" y="14" width="71" height="24"/>
+                            <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+                            <segmentedCell key="cell" borderStyle="border" alignment="left" style="texturedRounded" trackingMode="momentary" id="0f8-8K-ah4">
+                                <font key="font" metaFont="system"/>
+                                <segments>
+                                    <segment image="PlayButtonTemplate" width="32"/>
+                                    <segment image="StopButtonTemplate" width="32" tag="1"/>
+                                </segments>
+                            </segmentedCell>
+                            <connections>
+                                <action selector="startStopScript:" target="-2" id="Aku-ey-rMo"/>
+                            </connections>
+                        </segmentedControl>
+                    </toolbarItem>
+                    <toolbarItem implicitItemIdentifier="NSToolbarSpaceItem" id="JDZ-oG-XQu"/>
+                    <toolbarItem implicitItemIdentifier="NSToolbarFlexibleSpaceItem" id="qFs-OU-XZC"/>
+                    <toolbarItem implicitItemIdentifier="15FE6032-AD8B-444F-BC6D-3934BB9D1666" label="Playbook" paletteLabel="Playbook" image="NSBookmarksTemplate" sizingBehavior="auto" id="Va3-sP-MPn">
+                        <nil key="toolTip"/>
+                        <button key="view" verticalHuggingPriority="750" imageHugsTitle="YES" id="sKF-9y-Px2">
+                            <rect key="frame" x="0.0" y="14" width="93" height="23"/>
+                            <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+                            <buttonCell key="cell" type="roundTextured" title="Playbook" bezelStyle="texturedRounded" image="NSBookmarksTemplate" imagePosition="leading" alignment="center" lineBreakMode="truncatingTail" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="V4V-Rk-5Aj">
+                                <behavior key="behavior" pushIn="YES" changeContents="YES" lightByContents="YES"/>
+                                <font key="font" metaFont="system"/>
+                            </buttonCell>
+                        </button>
+                        <connections>
+                            <action selector="showPlaybook:" target="-2" id="vYR-IC-FBj"/>
+                        </connections>
+                    </toolbarItem>
+                    <toolbarItem implicitItemIdentifier="C2CE80EB-FC3B-436D-BF0C-91622D0BC84B" label="Search Docs" paletteLabel="Search Docs" id="NjZ-gD-WJZ">
+                        <nil key="toolTip"/>
+                        <size key="minSize" width="96" height="22"/>
+                        <size key="maxSize" width="200" height="22"/>
+                        <searchField key="view" wantsLayer="YES" verticalHuggingPriority="750" textCompletion="NO" id="fbL-aV-1NV">
+                            <rect key="frame" x="0.0" y="14" width="136" height="22"/>
+                            <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+                            <searchFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" selectable="YES" editable="YES" borderStyle="bezel" placeholderString="Search docs..." usesSingleLineMode="YES" bezelStyle="round" sendsSearchStringImmediately="YES" id="bIg-Fr-uY6">
+                                <font key="font" metaFont="system"/>
+                                <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
+                                <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
+                            </searchFieldCell>
+                            <connections>
+                                <action selector="searchDocs:" target="-2" id="lpg-Lb-ZEa"/>
+                            </connections>
+                        </searchField>
+                    </toolbarItem>
+                </allowedToolbarItems>
+                <defaultToolbarItems>
+                    <toolbarItem reference="2eX-Ct-HEO"/>
+                    <toolbarItem reference="qFs-OU-XZC"/>
+                    <toolbarItem reference="Va3-sP-MPn"/>
+                    <toolbarItem reference="NjZ-gD-WJZ"/>
+                </defaultToolbarItems>
+            </toolbar>
+            <connections>
+                <outlet property="delegate" destination="-2" id="0bl-1N-AYu"/>
+            </connections>
+            <point key="canvasLocation" x="300" y="327"/>
+        </window>
+        <box boxType="custom" borderType="none" borderWidth="0.0" title="Loading" titlePosition="noTitle" id="BHp-TD-RsO">
+            <rect key="frame" x="0.0" y="0.0" width="370" height="163"/>
+            <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+            <view key="contentView" id="Tmx-hW-pEe">
+                <rect key="frame" x="0.0" y="0.0" width="370" height="163"/>
+                <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                <subviews>
+                    <stackView distribution="fill" orientation="vertical" alignment="centerX" horizontalStackHuggingPriority="249.99998474121094" verticalStackHuggingPriority="249.99998474121094" detachesHiddenViews="YES" translatesAutoresizingMaskIntoConstraints="NO" id="ecR-vw-AKr">
+                        <rect key="frame" x="93" y="60" width="185" height="43"/>
+                        <subviews>
+                            <textField horizontalHuggingPriority="1000" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="KpK-Jx-fKo">
+                                <rect key="frame" x="35" y="26" width="115" height="17"/>
+                                <textFieldCell key="cell" lineBreakMode="clipping" title="Loading widgets..." id="CxB-ae-dmI">
+                                    <font key="font" metaFont="system"/>
+                                    <color key="textColor" name="labelColor" catalog="System" colorSpace="catalog"/>
+                                    <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
+                                </textFieldCell>
+                            </textField>
+                            <progressIndicator wantsLayer="YES" horizontalHuggingPriority="750" verticalHuggingPriority="750" maxValue="3" bezeled="NO" indeterminate="YES" style="bar" translatesAutoresizingMaskIntoConstraints="NO" id="Zwf-Wg-GnL">
+                                <rect key="frame" x="17" y="-1" width="151" height="20"/>
+                            </progressIndicator>
+                        </subviews>
+                        <constraints>
+                            <constraint firstItem="Zwf-Wg-GnL" firstAttribute="width" secondItem="KpK-Jx-fKo" secondAttribute="width" constant="40" id="bI0-DF-vXW"/>
+                        </constraints>
+                        <visibilityPriorities>
+                            <integer value="1000"/>
+                            <integer value="1000"/>
+                        </visibilityPriorities>
+                        <customSpacing>
+                            <real value="3.4028234663852886e+38"/>
+                            <real value="3.4028234663852886e+38"/>
+                        </customSpacing>
+                    </stackView>
+                </subviews>
+                <constraints>
+                    <constraint firstItem="ecR-vw-AKr" firstAttribute="width" secondItem="Tmx-hW-pEe" secondAttribute="width" multiplier="0.5" id="TpI-q3-x7F"/>
+                    <constraint firstItem="ecR-vw-AKr" firstAttribute="centerY" secondItem="Tmx-hW-pEe" secondAttribute="centerY" id="WyQ-4f-sdI"/>
+                    <constraint firstItem="ecR-vw-AKr" firstAttribute="centerX" secondItem="Tmx-hW-pEe" secondAttribute="centerX" id="iFW-9I-sqP"/>
+                </constraints>
+            </view>
+            <color key="fillColor" name="windowBackgroundColor" catalog="System" colorSpace="catalog"/>
+            <point key="canvasLocation" x="-366.5" y="176.5"/>
+        </box>
+    </objects>
+    <resources>
+        <image name="IssuesButtonTemplate" width="22" height="22"/>
+        <image name="NSBookmarksTemplate" width="17" height="18"/>
+        <image name="PlayButtonTemplate" width="22" height="22"/>
+        <image name="StopButtonTemplate" width="22" height="22"/>
+    </resources>
+</document>

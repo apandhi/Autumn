@@ -1,0 +1,471 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta http-equiv="Content-Type" content="text/html;charset=utf-8">
+  <link rel="stylesheet" data-name="monaco/min/vs/editor/editor.main" href="monaco/min/vs/editor/editor.main.css">
+  <script>var require = { paths: { 'vs': 'monaco/min/vs' } };</script>
+  <script src="monaco/min/vs/loader.js"></script>
+  <script src="monaco/min/vs/editor/editor.main.nls.js"></script>
+  <script src="monaco/min/vs/editor/editor.main.js"></script>
+  <script src="preact.js"></script>
+  <style>
+    *,
+    *::before,
+    *::after {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box
+    }
+
+    html {
+      background: #f7f7f7;
+      font-size: 12px;
+      font-family: -apple-system;
+    }
+
+    html,
+    body {
+      height: 100%;
+      overflow: hidden;
+    }
+
+    @media (min-width: 700px)  { #quick-link-overview { column-count: 2; } }
+    @media (min-width: 1050px) { #quick-link-overview { column-count: 3; } }
+    @media (min-width: 1400px) { #quick-link-overview { column-count: 4; } }
+
+    @media (min-width: 440px)  { .module-subgroup-list { column-count: 2; } }
+    @media (min-width: 660px)  { .module-subgroup-list { column-count: 3; } }
+    @media (min-width: 880px)  { .module-subgroup-list { column-count: 4; } }
+    @media (min-width: 1100px) { .module-subgroup-list { column-count: 5; } }
+    @media (min-width: 1320px) { .module-subgroup-list { column-count: 6; } }
+    @media (min-width: 1540px) { .module-subgroup-list { column-count: 7; } }
+
+    #playbook {
+      overflow: scroll;
+      padding: 1rem;
+      width: 100%;
+      height: 100%;
+    }
+
+    #root {
+      overflow: scroll;
+      width: 100%;
+      height: 100%;
+    }
+
+    #quick-link-overview {
+      margin: 1rem;
+      border-bottom: 1px solid #ddd;
+    }
+
+    .quick-link-group {
+      padding-bottom: 2rem;
+      -webkit-column-break-inside: avoid;
+    }
+
+    .quick-link-group-header {
+      font-size: 150%;
+      margin-bottom: 1rem;
+    }
+
+    .quick-link-list {
+      display: table;
+    }
+
+    .quick-link {
+      display: table-row;
+    }
+
+    .quick-link-name {
+      padding-bottom: 1rem;
+      padding-right: 1rem;
+      display: table-cell;
+      text-decoration: none;
+    }
+
+    .quick-link-name:hover {
+      text-decoration: underline;
+    }
+
+    .quick-link-docs {
+      padding-bottom: 1rem;
+      display: table-cell;
+    }
+
+    .nothing-found {
+      margin: 1rem;
+    }
+
+    .nothing-found span {
+      font-style: italic;
+      font-weight: bold;
+    }
+
+    .module-list {
+      display: grid;
+      align-content: start;
+      overflow-y: scroll;
+      height: 100%;
+      width: 100%;
+    }
+
+    .module {
+      padding-bottom: 1rem;
+    }
+
+    .module-name-section {
+      padding: 1rem;
+      z-index: 100;
+      position: -webkit-sticky;
+      top: 0;
+      background: #f7f7f7;
+    }
+
+    .module-name {
+      font-size: 135%;
+      font-weight: 100;
+    }
+
+    .jump-to-top {
+      float: right;
+    }
+
+    .module-docs {
+      padding: 0.5rem 1rem;
+      font-weight: normal;
+      font-size: 100%;
+    }
+
+    .module-subgroup-list {
+      margin: 1rem 0;
+    }
+
+    .module-subgroup-item {
+      padding: 1rem 1rem;
+      -webkit-column-break-inside: avoid;
+    }
+
+    .module-subgroup-name {
+      margin-bottom: 0.5rem;
+    }
+
+    .module-subgroup-method {
+      margin-bottom: 3px;
+    }
+
+    .is-static-symbol {
+      background: #e7e7e7;
+      border-radius: 3px;
+      display: inline-block;
+      padding: 1px 3px;
+      margin-right: 4px;
+      font-size: 90%;
+    }
+
+    .darkmode .is-static-symbol {
+      background: #000;
+      color: #bbb;
+    }
+
+    .subgroup-header {
+      padding: 0.5rem 1rem;
+      /* margin-left: 1rem; */
+      font-size: 110%;
+    }
+
+    .method-list {
+      display: grid;
+      margin-bottom: 2rem;
+    }
+
+    .method {
+      background: #fff;
+      padding: 1rem;
+      margin: 0.5rem 1rem;
+      border-radius: 3px;
+      box-shadow: 0px 1px 2px 1px #0001;
+    }
+
+    .method-name {
+      font-family: Menlo;
+      white-space: pre-wrap;
+    }
+
+    .method-docs {
+      margin-top: 1rem;
+      /* margin-left: 1rem; */
+    }
+
+    .doc-line {
+      white-space: pre-wrap;
+    }
+
+    .doc-line:not(:last-child) {
+      margin-bottom: 1rem;
+    }
+
+    .darkmode {
+      background: #202020;
+      color: #fff;
+    }
+
+    .darkmode a {
+      color: #4ab4f7;
+    }
+
+    .darkmode .module-name-section {
+      background: #202020;
+    }
+
+    .darkmode .method {
+      background: #292a30;
+      box-shadow: none;
+      border: 1px solid #33343a;
+    }
+
+    .darkmode #quick-link-overview {
+      border-color: #555;
+    }
+  </style>
+</head>
+
+<body>
+  <div id="root"></div>
+  <pre id="playbook" hidden></pre>
+  <script>
+    if (!Array.prototype.flatMap) {
+      Array.prototype.flatMap = function(f) {
+        const arrays = this.map(f);
+        return [].concat(...arrays);
+      };
+    }
+    
+    monaco.editor.defineTheme('better-dark', {
+      base: 'vs-dark',
+      inherit: true,
+      rules: [],
+      colors: {
+        'editor.background': '#282c34',
+      },
+    });
+
+    const playbookElement = document.getElementById('playbook');
+    monaco.editor.colorize(autumnConfig.playbook, 'typescript').then(html => {
+      playbookElement.innerHTML = html;
+    });
+
+    const { Component, h, render } = window.preact;
+
+    docsJson.forEach(group => {
+      group.mods.forEach(mod => {
+        mod.groups.forEach(subgroup => {
+          subgroup.methods.forEach(method => {
+            method.name = method.name.trim();
+            method.isStatic = method.name.startsWith('static ');
+            method.shortName = method.isStatic ?
+              method.name.match(/static (\w+)/)[1] :
+              method.name.match(/(\w+)/)[1];
+            method.htmlName = method.name;
+            monaco.editor.colorize(method.name, 'typescript').then(html => {
+              method.htmlName = html.replace(/\s/g, ' ');
+              mainComponent.throttledUpdate();
+            });
+            method.docstring = method.docs.join('\n');
+            method.docs = method.docs.map(doc => doc.replace(/^@param ([^ ]+) /, '<i>$1</i>: '));
+          });
+          mod.docstring = mod.docs.join('\n');
+        });
+      });
+    });
+
+    function searchFound(search, { name, docstring }) {
+      return name.match(search) ||
+        docstring.match(search);
+    }
+
+    const DocLine = ({ doc }) => (
+      h('div', { class: 'doc-line', dangerouslySetInnerHTML: { __html: doc } })
+    );
+
+    const Method = ({ method, search, linkId }) => {
+      if (search && !searchFound(search, method))
+        return null;
+
+      return h('div', { class: 'method', id: linkId }, [
+        h('pre', { class: 'method-name', dangerouslySetInnerHTML: { __html: method.htmlName } }),
+        method.docstring && h('div', { class: 'method-docs' }, method.docs.map(doc => h(DocLine, { doc }))),
+      ])
+    };
+
+    const Module = ({ mod, search, jumpToTop }) => {
+      const showWholeModule = (!search || searchFound(search, mod));
+
+      if (!showWholeModule &&
+        !mod.groups.flatMap(subgroup => subgroup.methods).find(method => searchFound(search, method)))
+        return null;
+
+      function jumpLower(e) {
+        setTimeout(() => {
+          document.querySelector('.module-list').scrollTop -= 45;
+        }, 0);
+      }
+
+      const skipSubgroupList = mod.name === 'KeyString' || mod.name === 'ModString';
+
+      return h('div', { class: 'module', id: mod.name },
+        // [h('div', null,
+        [
+          h('div', { class: 'module-name-section' }, [
+            h('a', { href: '#', onclick: jumpToTop, class: 'jump-to-top' }, ["Table of Contents"]),
+            h('a', { class: 'module-name', href: '#' + mod.name }, [mod.name]),
+          ]),
+          h('div', { class: 'module-docs' }, mod.docs.map(doc => h('div', { class: 'doc-line' }, doc))),
+          !search && !skipSubgroupList && h('div', { class: 'module-subgroup-list' }, mod.groups.map(subgroup => (
+            h('div', { class: 'module-subgroup-item' }, [
+              !subgroup.name.length ? null : h('div', { class: 'module-subgroup-name' }, subgroup.name),
+              ...subgroup.methods.map(method => (
+                h('div', { class: 'module-subgroup-method' }, [
+                  method.isStatic && h('span', { class: 'is-static-symbol' }, 'static'),
+                  h('a', { href: ['#', mod.name, method.shortName].join(''), onclick: jumpLower }, [method.shortName])
+                ])
+              ))
+            ])
+          ))),
+          h('div', { class: 'method-list' },
+            mod.groups.map(subgroup => h('div', { class: 'subgroup' }, [
+              (search || !subgroup.name.length) ? null : h('div', { class: 'subgroup-header' }, subgroup.name),
+              ...subgroup.methods.map(method => 
+                h(Method, { linkId: [mod.name, method.shortName].join(''), method, search: showWholeModule ? null : search }))
+            ]))
+          ),
+        ]
+        // )]
+      )
+    };
+
+    const QuickLinks = ({ groups }) => (
+      h('div', { id: 'quick-link-overview' },
+        groups.map(group =>
+          group.name &&
+          h('div', { class: 'quick-link-group' }, [
+            h('div', { class: 'quick-link-group-header' }, group.name),
+            h('div', { class: 'quick-link-list' }, group.mods.map(mod => (
+              h('div', { class: 'quick-link' }, [
+                h('a', { class: 'quick-link-name', href: '#' + mod.name }, [mod.name]),
+                h('span', { class: 'quick-link-docs' }, h('div', { class: 'doc-line' }, mod.docs[0])),
+              ])
+            )))
+          ])
+        )
+      )
+    );
+
+    let mainComponent;
+
+    class Main extends Component {
+
+      constructor(props) {
+        super(props);
+        this.state = { search: null };
+        this.jumpToTop = () => {
+          if (this.state.search) {
+            window.webkit.messageHandlers.clearSearch.postMessage(null);
+            this.setState({ search: '' });
+          }
+          else {
+            this.scrollTarget.scrollIntoView({ behavior: "smooth" });
+          }
+        };
+      }
+
+      componentDidMount() {
+        // cheap hack or legitimate technique? who knows
+        mainComponent = this;
+      }
+
+      componentDidUpdate() {
+        Array
+          .from(document.querySelectorAll('.mtk22'))
+          .forEach(el => {
+            if (document.getElementById(el.innerText)) {
+              el.style.cursor = 'pointer';
+              el.style.textDecoration = 'underline';
+              el.onclick = () => {
+                autumn_togglePlaybook(false);
+                window.webkit.messageHandlers.didHidePlaybook.postMessage(null);
+                location.href = '#' + el.innerText;
+              };
+            }
+          });
+      }
+
+      render() {
+        const { search } = this.state;
+
+        const emptyResults = (search &&
+          !docsJson.find(group =>
+            group.mods.find(mod =>
+              searchFound(search, mod) ||
+              mod.groups.flatMap(sg => sg.methods).find(method => searchFound(search, method)))));
+
+        const results = emptyResults ?
+          h('div', { class: 'nothing-found' }, ['Nothing found for: ', h('span', null, [search.source])]) :
+          [
+            h('div', { ref: (el) => { this.scrollTarget = el } }),
+            !search && h(QuickLinks, { groups: docsJson }),
+            ...docsJson.flatMap(group => group.mods.map(mod => h(Module, { mod, search, jumpToTop: this.jumpToTop })))
+          ];
+
+        return h('div', { class: 'module-list' }, [results]);
+      }
+
+      searchFor(search) {
+        search = search ? new RegExp(search, 'i') : null;
+        this.setState({ search });
+      }
+
+      throttledUpdate() {
+        if (this.throttler) return;
+        this.throttler = setTimeout(() => {
+          this.forceUpdate();
+          this.throttler = null;
+        }, 500);
+      }
+
+    }
+
+
+
+    render(h(Main), document.getElementById('root'));
+    autumn_darkmode(autumnConfig.darkMode);
+
+    document.onkeydown = (e) => {
+      if (e.key === 'f' && e.metaKey) {
+            window.webkit.messageHandlers.focusSearch.postMessage(null);
+      }
+    };
+
+    function autumn_darkmode(darkMode) {
+      document.documentElement.classList.toggle('darkmode', darkMode);
+      monaco.editor.setTheme(darkMode ? 'better-dark' : 'vs');
+    }
+
+    function autumn_togglePlaybook(showPlaybook) {
+      playbookElement.hidden = !showPlaybook;
+      document.getElementById('root').hidden = showPlaybook;
+    }
+
+    function autumn_searchDocs(str) {
+      mainComponent.searchFor(str);
+    }
+
+    function autumn_zoomPage(zoom) {
+      document.documentElement.style.zoom = zoom;
+    }
+    autumn_zoomPage(pageZoom);
+  </script>
+
+</body>
+
+</html>

@@ -1,0 +1,735 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta http-equiv="Content-Type" content="text/html;charset=utf-8">
+  <link rel="stylesheet" data-name="monaco/min/vs/editor/editor.main" href="monaco/min/vs/editor/editor.main.css">
+  <script>var require = { paths: { 'vs': 'monaco/min/vs' } };</script>
+  <script src="monaco/min/vs/loader.js"></script>
+  <script src="monaco/min/vs/editor/editor.main.nls.js"></script>
+  <script src="monaco/min/vs/editor/editor.main.js"></script>
+  <style>
+    html,
+    body {
+      overflow: hidden;
+    }
+
+    html {
+      background: #fff;
+    }
+
+    .darkmode {
+      background: #282c34;
+      color: #fff;
+    }
+
+    *,
+    *::before,
+    *::after {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box
+    }
+
+    .monaco-editor .view-line {
+      -webkit-user-select: all;
+    }
+
+
+
+    #root {
+      width: 100vw;
+      height: 100vh;
+
+      font-size: 11px;
+      font-family: Menlo, monospace;
+      overflow: hidden;
+    }
+
+    #banner {
+      font-family: -apple-system;
+      font-size: 11px;
+      padding: 0.25rem 0;
+      text-align: center;
+      background: #f0f0f0;
+      border-bottom: 1px solid #e1e1e1;
+      -webkit-user-select: none;
+    }
+
+    .darkmode #banner {
+      border-color: #000;
+      background: #222;
+    }
+
+    #container {
+      width: 100%;
+      height: 100%;
+      display: grid;
+      grid-template-rows: auto 1fr;
+      overflow: hidden;
+    }
+
+    #inner-container {
+      display: grid;
+      grid-template-rows: auto 1fr;
+      overflow: auto;
+    }
+
+    .row {
+      padding: 0.33rem 0.5rem;
+      display: grid;
+      grid-template-columns: 1rem 1fr;
+    }
+
+    .error-row {
+      background: #fff0f0;
+      color: #fc0f1c;
+      margin-top: -1px;
+      border-top: 1px solid #fed6d7;
+      border-bottom: 1px solid #fed6d7;
+    }
+
+    #input-box-row {
+      position: -webkit-sticky;
+      bottom: 0;
+      background: #fff;
+    }
+
+    #input-box-row:not(:first-child) {
+      margin-top: -1px;
+      border-top: 1px solid #f0f0f0;
+    }
+
+    .input-data>* {
+      background: #fff !important;
+    }
+
+    #input-box-icon {
+      color: #4082ee;
+    }
+
+    .input-icon {
+      color: #959595;
+    }
+
+    .result-icon {
+      color: #bbbbbb;
+    }
+
+    .result-row-save-id {
+      opacity: 0.5;
+    }
+
+    .error-msg {
+      white-space: pre-wrap;
+    }
+
+    .result-row {
+      border-bottom: 1px solid #f0f0f0;
+    }
+
+    .input-row {
+      border-bottom: 1px solid #f0f0f0;
+    }
+
+    #input-box {
+      outline: none;
+      font-family: inherit;
+      font-size: inherit;
+      border: none;
+      background: inherit;
+      display: block;
+      width: 100%;
+    }
+
+    .function-value {
+      color: rgb(128, 128, 128);
+    }
+
+    .recursive-value {
+      color: rgb(128, 128, 128);
+    }
+
+    .undefined-value {
+      color: rgb(128, 128, 128);
+    }
+
+    .null-value {
+      color: rgb(128, 128, 128);
+    }
+
+    .boolean-value {
+      color: rgb(13, 34, 170);
+    }
+
+    .number-value {
+      color: rgb(28, 0, 207);
+    }
+
+    .string-value {
+      color: rgb(196, 26, 22);
+    }
+
+    .print-value {
+      white-space: pre-wrap;
+    }
+
+    .string-quote {
+      color: #000;
+    }
+
+    .symbol-value {
+      color: rgb(196, 26, 22);
+    }
+
+    .object-value {
+      color: inherit;
+    }
+
+    .object-key {
+      color: rgb(136, 19, 145);
+    }
+
+    .object-shorthand-key {
+      color: #565656;
+    }
+
+    .darkmode .function-value {
+      color: #999;
+    }
+
+    .darkmode .recursive-value {
+      color: #999;
+    }
+
+    .darkmode .undefined-value {
+      color: #999;
+    }
+
+    .darkmode .null-value {
+      color: #999;
+    }
+
+    .darkmode .boolean-value {
+      color: #88ddff;
+    }
+
+    .darkmode .number-value {
+      color: #22bbff;
+    }
+
+    .darkmode .string-value {
+      color: #ff7733;
+    }
+
+    .darkmode .print-value {
+      white-space: pre-wrap;
+    }
+
+    .darkmode .string-quote {
+      color: #000;
+    }
+
+    .darkmode .symbol-value {
+      color: #ff7755;
+    }
+
+    .darkmode .object-value {
+      color: inherit;
+    }
+
+    .darkmode .object-key {
+      color: #ddd;
+    }
+
+    .darkmode .object-shorthand-key {
+      color: #d573e9;
+    }
+
+    .object-expander {
+      width: 1rem;
+      color: #727272;
+      cursor: pointer;
+      -webkit-user-select: none;
+    }
+
+    .object-top-area {
+      display: grid;
+      grid-auto-flow: column;
+      justify-content: start;
+    }
+
+    .object-entries {
+      margin-left: 1rem;
+      display: block;
+    }
+
+    .object-value:not(.expanded)>.object-entries {
+      display: none;
+    }
+
+    .object-expander::after {
+      content: '▶';
+    }
+
+    .object-value.expanded>*>.object-expander::after {
+      content: '▼';
+    }
+
+    .object-entry {
+      display: grid;
+      grid-auto-flow: column;
+      grid-gap: 0.5em;
+      justify-content: start;
+    }
+
+    .object-shorthand {
+      text-indent: -12px;
+      margin-left: 12px;
+    }
+
+    .object-value.expanded>*>.object-shorthand:not(.at-root) {
+      display: none;
+    }
+
+    .at-root {
+      font-style: italic;
+    }
+
+    .darkmode #input-box-row {
+      background: #282c34;
+    }
+
+    .darkmode .input-data>* {
+      background: #282c34 !important;
+    }
+
+    .darkmode #input-box-row:not(:first-child) {
+      border-color: #222;
+    }
+
+    .darkmode .result-row {
+      border-color: #222;
+    }
+
+    .darkmode .input-row {
+      border-color: #222;
+    }
+
+    .darkmode .error-row {
+      background: #532f31;
+      color: #fff;
+      border-color: #67332f;
+      border-color: #67332f;
+    }
+  </style>
+</head>
+
+<body>
+  <div id="root">
+    <div id="container">
+      <div id="banner">Console</div>
+      <div id="inner-container">
+        <div id="rows">
+          <!-- ... -->
+          <div id="input-box-row" class="row" onclick="focusTextField()">
+            <div id="input-box-icon" class="icon">❯</div>
+            <div id="input-box"></div>
+          </div>
+          <div style="float:left;clear:both" id="scroll-target"></div>
+        </div>
+        <div onclick="focusTextField()"></div>
+      </div>
+    </div>
+  </div>
+  <script>
+    monaco.languages.typescript.typescriptDefaults.addExtraLib(window.autumnConfig.ecma, 'ecmascript.d.ts');
+    monaco.languages.typescript.typescriptDefaults.addExtraLib(window.autumnConfig.apis, 'autumn.d.ts');
+
+    monaco.languages.typescript.typescriptDefaults.setCompilerOptions({
+      target: monaco.languages.typescript.ScriptTarget.ES2017,
+      allowNonTsExtensions: true,
+      noLib: true,
+    });
+
+    monaco.editor.defineTheme('better-dark', {
+      base: 'vs-dark',
+      inherit: true,
+      rules: [],
+      colors: {
+        'editor.background': '#282c34',
+      },
+    });
+
+    monaco.editor.defineTheme('better-light', {
+      base: 'vs',
+      inherit: true,
+      rules: [],
+      colors: {
+        'editor.background': '#fff',
+      },
+    });
+
+
+
+    const editor = monaco.editor.create(document.getElementById('input-box'), {
+      theme: autumnConfig.darkMode ? 'better-dark' : 'better-light',
+      minimap: { enabled: false },
+      scrollBeyondLastLine: false,
+      lineNumbers: 'off',
+      language: 'typescript',
+      fontFamily: 'Menlo',
+      fontSize: 11,
+      folding: false,
+      overviewRulerBorder: false,
+      scrollbar: {
+        horizontal: 'hidden',
+        vertical: 'hidden',
+      },
+      contextmenu: false,
+      fixedOverflowWidgets: true,
+      hideCursorInOverviewRuler: true,
+      highlightActiveIndentGuide: false,
+      renderLineHighlight: 'none', // the box around the current line
+      lineDecorationsWidth: 0, // removes the left padding
+      lineHeight: 13,
+      cursorWidth: 1,
+      occurrencesHighlight: false, // disable "highlight this word everywhere in the document"
+      showUnused: false, // disable "dim unused variables"
+
+      // iconsInSuggestions: false, // useless?
+      // lightbulb: { enabled: false }, // useless?
+      // overviewRulerLanes: 0, // useless?
+
+      // renderIndentGuides: false,
+
+    });
+
+    const state = {
+      text: '',
+      history: [],
+      historyIndex: 0,
+      rows: [],
+      manuallyChanging: false,
+    };
+
+    window.addEventListener('resize', layout);
+
+    editor.addCommand(monaco.KeyCode.Enter, onEnter, '!suggestWidgetVisible');
+    editor.addCommand(monaco.KeyMod.CtrlCmd | monaco.KeyCode.KEY_E, () => { });
+    editor.addCommand(monaco.KeyMod.CtrlCmd | monaco.KeyCode.KEY_F, () => { });
+    editor.addCommand(monaco.KeyMod.CtrlCmd | monaco.KeyCode.KEY_G, () => { });
+
+    editor.addCommand(monaco.KeyCode.UpArrow, onUp, '!suggestWidgetVisible');
+    editor.addCommand(monaco.KeyCode.DownArrow, onDown, '!suggestWidgetVisible');
+
+    editor.addCommand(monaco.KeyMod.WinCtrl | monaco.KeyCode.KEY_P, onUp, '!suggestWidgetVisible');
+    editor.addCommand(monaco.KeyMod.WinCtrl | monaco.KeyCode.KEY_N, onDown, '!suggestWidgetVisible');
+
+    editor.onDidChangeModelContent(event => {
+      layout();
+
+      if (!state.manuallyChanging) {
+        onChange(editor.getValue());
+      }
+    });
+
+    layout();
+    editor.focus();
+
+    autumn_darkmode(autumnConfig.darkMode);
+
+    function layout(zoom) {
+      zoom = zoom || 1;
+      const lines = editor.getValue().split(/\r\n|\r|\n/).length;
+      editor.layout({ width: 100, height: lines * 13 * zoom });
+      editor.layout();
+    }
+
+    function focusTextField() {
+      editor.focus();
+    }
+
+    function scrollToBottom() {
+      document.getElementById('scroll-target').scrollIntoView({ behavior: "smooth" });
+    }
+
+    function onUp() {
+      const pos = editor.getPosition();
+      if (pos.lineNumber > 1) {
+        pos.lineNumber -= 1;
+        editor.setPosition(pos);
+      }
+      else {
+        if (state.historyIndex < state.history.length) {
+          useHistoryItem(state.historyIndex + 1);
+        }
+      }
+    }
+
+    function onDown() {
+      const pos = editor.getPosition();
+      const lines = editor.getValue().split(/\r\n|\r|\n/).length;
+      if (pos.lineNumber < lines) {
+        pos.lineNumber += 1;
+        editor.setPosition(pos);
+      }
+      else {
+        if (state.historyIndex > 0) {
+          useHistoryItem(state.historyIndex - 1);
+        }
+      }
+    }
+
+    function useHistoryItem(historyIndex) {
+      state.historyIndex = historyIndex;
+
+      const { history, text } = state;
+      const newText = (historyIndex > 0
+        ? history[history.length - historyIndex]
+        : text);
+
+      if (editor.getValue() !== newText) {
+        state.manuallyChanging = true;
+        editor.setValue(newText);
+        state.manuallyChanging = false;
+
+        const lines = editor.getValue().split(/\r\n|\r|\n/);
+        editor.setPosition({
+          lineNumber: lines.length,
+          column: lines[lines.length - 1].length + 1,
+        });
+      }
+    }
+
+    function onEnter() {
+      const input = editor.getValue();
+      if (input.trim() === '') return;
+      window.webkit.messageHandlers.eval.postMessage(input);
+      addExtraUserCode(input);
+
+      monaco.editor.colorize(input, 'typescript').then(html => {
+        state.history.push(input);
+        state.text = '';
+        state.historyIndex = 0;
+        editor.setValue('');
+        addRow({ type: 'input', html });
+      });
+    }
+
+    function onChange(text) {
+      state.text = text;
+      state.historyIndex = 0;
+    }
+
+    const componentMapping = {
+      error: ErrorRow,
+      result: ResultRow,
+      input: InputRow,
+    };
+
+    function addRow(item) {
+      const newEl = componentMapping[item.type](item);
+      const goBefore = document.getElementById('input-box-row');
+      goBefore.insertAdjacentElement('beforebegin', newEl);
+      state.rows.push(newEl);
+      scrollToBottom();
+    }
+
+    function logInspectedObject(result) {
+      addRow({ type: 'result', result });
+    }
+
+    function logInspectedObjectSaved(result, input, saveId) {
+      addRow({ type: 'result', result, saveId });
+      if (typeof saveId === 'number') {
+        extraUserLibs.push(monaco.languages.typescript.typescriptDefaults.addExtraLib(`let $${saveId} = ${input}`));
+      }
+    }
+
+    function logError(msg, loc) {
+      addRow({ type: 'error', error: { msg, loc } });
+    }
+
+    function clearConsole() {
+      for (const el of state.rows) {
+        el.remove();
+      }
+      state.rows = [];
+    }
+
+    const MAX_SHORTHAND = 7;
+    function ObjectShorthand({ onclick, entries, isArray, len, atRoot }) {
+      return h('div', { class: 'object-shorthand ' + (atRoot ? 'at-root' : ''), onclick }, [
+        isArray && `(${len}) `,
+        isArray ? '[' : '{',
+        ...entries.map(({ key, value }, i, array) => {
+          if (i === MAX_SHORTHAND) return '…';
+          if (i > MAX_SHORTHAND) return null;
+          return h('span', null, [
+            key != i && h('span', { class: 'object-shorthand-key' }, [key]),
+            key != i && ': ',
+            (value.type === 'object') ? '{…}' : valueComponentFor(false, value),
+            i < array.length - 1 ? ', ' : null,
+          ]);
+        }),
+        isArray ? ']' : '}',
+      ]);
+    }
+
+    function WholeObject(props) {
+      const { entries, isArray, len, atRoot } = props;
+
+      function onclick() {
+        el.classList.toggle('expanded');
+      }
+
+      var el = h('div', { class: 'object-value' }, [
+        h('div', { class: 'object-top-area' }, [
+          h('div', { class: 'object-expander', onclick, }, []),
+          ObjectShorthand({ ...props, onclick }),
+        ]),
+        h('div', { class: 'object-entries' },
+          entries.length === 0 ? ['(empty)'] :
+            entries.map(({ key, value }) => (
+              h('div', { class: 'object-entry' }, [
+                h('span', null, [
+                  h('span', { class: 'object-key' }, [key]),
+                  ': ',
+                ]),
+                h('span', null, [
+                  valueComponentFor(false, value),
+                ]),
+              ])
+            ))
+        )
+      ]);
+
+      return el;
+    }
+
+    function valueComponentFor(atRoot, object) {
+      const { type, value, entries, isArray } = object;
+      switch (type) {
+        case 'function': return h('span', { class: 'function-value' }, ['<function>']);
+        case 'recursive': return h('span', { class: 'recursive-value' }, ['<recursive>']);
+        case 'undefined': return h('span', { class: 'undefined-value' }, ['undefined']);
+        case 'null': return h('span', { class: 'null-value' }, ['null']);
+        case 'boolean': return h('span', { class: 'boolean-value' }, [String(value)]);
+        case 'number': return h('span', { class: 'number-value' }, [value]);
+        case 'print': return h('span', { class: 'print-value' }, [value]);
+        case 'string': return h('span', { class: 'string-value' }, [JSON.stringify(value)]);
+        case 'symbol': return h('span', { class: 'symbol-value' }, [value]);
+        case 'object': return WholeObject({ ...object, atRoot });
+      }
+    }
+
+    function ResultRow({ result, saveId }) {
+      return h('div', { class: 'result-row row' }, [
+        h('div', { class: 'result-icon icon' }, ['❮']),
+        h('div', { class: 'result-data' }, [
+          valueComponentFor(true, result),
+          saveId && h('span', { class: 'result-row-save-id' }, [' = $' + saveId]),
+        ]),
+      ]);
+    }
+
+    function InputRow({ html }) {
+      return h('div', { class: 'input-row row' }, [
+        h('div', { class: 'input-icon icon' }, ['❯']),
+        h('div', { class: 'input-data', html }, []),
+      ]);
+    }
+
+    function ErrorRow({ error }) {
+      return h('div', { class: 'error-row row' }, [
+        h('div', { class: 'error-icon icon' }, ['×']),
+        h('div', { class: 'error-msg' }, [error.msg + '\n   ' + error.loc]),
+      ])
+    }
+
+    function h(tag, attrs, children) {
+      const el = document.createElement(tag);
+      if (attrs !== null) {
+        Object.entries(attrs).forEach(([key, val]) => {
+          if (key === 'html') {
+            el.innerHTML = val;
+          }
+          else {
+            if (key === 'class') key = 'className';
+            el[key] = val;
+          }
+        });
+      }
+      children.forEach(child => {
+        if (child !== null && child !== false && child !== undefined) {
+          el.append(child);
+        }
+      });
+      return el;
+    }
+
+    function autumn_focus() {
+      focusTextField();
+    }
+
+    function autumn_darkmode(darkMode) {
+      document.documentElement.classList.toggle('darkmode', darkMode);
+      monaco.editor.setTheme(darkMode ? 'better-dark' : 'better-light');
+    }
+
+    function autumn_logInspectedObject(json) {
+      logInspectedObject(JSON.parse(json));
+    }
+
+    function autumn_logInspectedObjectSaved(json, input, saveId) {
+      logInspectedObjectSaved(JSON.parse(json), input, saveId);
+    }
+
+    function autumn_logError(msg, loc) {
+      logError(msg, loc);
+    }
+
+    function autumn_clearConsole() {
+      setTimeout(clearConsole, 0);
+    }
+
+    let extraUserLibs = [];
+
+    function addExtraUserCode(code) {
+      extraUserLibs.push(monaco.languages.typescript.typescriptDefaults.addExtraLib(code));
+    }
+
+    function autumn_userScriptWasRun(userScript) {
+      addExtraUserCode(userScript);
+    }
+
+    function autumn_userScriptWasStopped() {
+      extraUserLibs.forEach(lib => lib.dispose());
+      extraUserLibs = [];
+    }
+
+    function autumn_runEditorSelection(code) {
+      code = JSON.parse(code).join("\n");
+      state.manuallyChanging = true;
+      editor.setValue(code);
+      state.manuallyChanging = false;
+      onEnter();
+    }
+
+    function autumn_zoomPage(zoom) {
+      document.documentElement.style.zoom = zoom;
+      document.getElementById('input-box').style.zoom = 1 / zoom;
+      editor.updateOptions({
+        fontSize: 11 * zoom,
+        lineHeight: 13 * zoom,
+      });
+
+      layout(zoom);
+    }
+    autumn_zoomPage(pageZoom);
+  </script>
+
+</body>
+
+</html>

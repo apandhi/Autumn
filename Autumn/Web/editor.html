@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta http-equiv="Content-Type" content="text/html;charset=utf-8">
+  <link rel="stylesheet" data-name="monaco/min/vs/editor/editor.main" href="monaco/min/vs/editor/editor.main.css">
+  <script>var require = { paths: { 'vs': 'monaco/min/vs' } };</script>
+  <script src="monaco/min/vs/loader.js"></script>
+  <script src="monaco/min/vs/editor/editor.main.nls.js"></script>
+  <script src="monaco/min/vs/editor/editor.main.js"></script>
+  <style>
+    html,
+    body {
+      overflow: hidden;
+      height: 100%;
+    }
+
+    *,
+    *::before,
+    *::after {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box
+    }
+
+    .monaco-editor .view-line {
+      -webkit-user-select: all;
+    }
+
+    html {
+      background: #fff;
+      color: #000;
+    }
+
+    .darkmode {
+      background: #282c34;
+      color: #fff;
+    }
+
+    #root {
+      width: 100vw;
+      height: 100vh;
+    }
+  </style>
+</head>
+
+<body>
+  <div id="root"></div>
+  <script>
+    monaco.languages.typescript.typescriptDefaults.addExtraLib(window.autumnConfig.ecma, 'ecmascript.d.ts');
+    monaco.languages.typescript.typescriptDefaults.addExtraLib(window.autumnConfig.apis, 'autumn.d.ts');
+
+    monaco.languages.typescript.typescriptDefaults.setCompilerOptions({
+      target: monaco.languages.typescript.ScriptTarget.ES2017,
+      allowNonTsExtensions: true,
+      noLib: true,
+    });
+
+    monaco.editor.defineTheme('better-dark', {
+      base: 'vs-dark',
+      inherit: true,
+      rules: [],
+      colors: {
+        'editor.background': '#282c34',
+      },
+    });
+
+
+
+    const editor = monaco.editor.create(document.getElementById('root'), {
+      theme: autumnConfig.darkMode ? 'better-dark' : 'vs',
+      minimap: { enabled: false },
+      scrollBeyondLastLine: false,
+      lineNumbers: 'on',
+      lineNumbersMinChars: 3,
+      language: 'typescript',
+      fixedOverflowWidgets: true,
+      value: window.autumnConfig.code,
+      formatOnPaste: true,
+      formatOnType: true,
+      fontFamily: 'Menlo',
+      fontSize: 11,
+    });
+
+    window.addEventListener('resize', () => editor.layout());
+    editor.layout();
+
+    editor.onDidChangeModelContent(event => {
+      window.webkit.messageHandlers.editorCodeChanged.postMessage(editor.getValue());
+    });
+
+
+    autumn_darkmode(autumnConfig.darkMode);
+
+
+    function autumn_focus() {
+      editor.focus();
+    }
+
+    function autumn_sendSelection() {
+      const model = editor.getModel();
+      const sels = editor.getSelections();
+      const json = JSON.stringify(sels.map(sel => model.getValueInRange(sel)));
+      if (json !== '[""]') {
+        window.webkit.messageHandlers.sendSelectionToConsole.postMessage(json);
+      }
+    }
+
+    function autumn_darkmode(darkMode) {
+      document.documentElement.classList.toggle('darkmode', darkMode);
+      monaco.editor.setTheme(darkMode ? 'better-dark' : 'vs');
+    }
+
+    function autumn_zoomPage(zoom) {
+      editor.updateOptions({ fontSize: (11 * zoom) });
+      editor.layout();
+    }
+    autumn_zoomPage(pageZoom);
+  </script>
+
+</body>
+
+</html>
