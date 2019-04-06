@@ -9,6 +9,7 @@
 @protocol JSExport_Pasteboard <JSExport>
 
 + (NSString*) stringContents;
++ (NSNumber *) setStringContents:(NSString*)string;
 + (NSNumber*) changeCount;
 
 @end
