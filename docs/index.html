@@ -1,0 +1,960 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset="utf-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+  <link href="https://fonts.googleapis.com/css?family=Roboto" rel="stylesheet">
+  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
+
+  <script src="//code.jquery.com/jquery-latest.js"></script>
+  <link href="//cdnjs.cloudflare.com/ajax/libs/lity/2.3.1/lity.min.css" rel="stylesheet">
+  <script src="//cdnjs.cloudflare.com/ajax/libs/lity/2.3.1/lity.min.js"></script>
+
+  <link rel="stylesheet" data-name="playbook/monaco/min/vs/editor/editor.main"
+    href="playbook/monaco/min/vs/editor/editor.main.css">
+  <script>var require = { paths: { 'vs': 'playbook/monaco/min/vs' } };</script>
+  <script src="playbook/monaco/min/vs/loader.js"></script>
+  <script src="playbook/monaco/min/vs/editor/editor.main.nls.js"></script>
+  <script src="playbook/monaco/min/vs/editor/editor.main.js"></script>
+
+  <title>Autumn - macOS window manager for JavaScript hackers</title>
+  <style type="text/css">
+    * {
+      padding: 0;
+      margin: 0;
+      box-sizing: border-box;
+    }
+
+    :target {
+      display: block;
+      position: relative;
+      top: -64px;
+      visibility: hidden;
+    }
+
+    html {
+      background: #f7f7f7;
+      font-family: 'Roboto', sans-serif;
+    }
+
+    html.dark {
+      background: #212121;
+    }
+
+    #stickyheader {
+      position: sticky;
+      position: -webkit-sticky;
+      top: 0;
+      z-index: 200;
+
+      background: #f7f7f7;
+      color: #000;
+      box-shadow: 0px 0px 5px 3px #0002;
+
+      padding: 1rem 2rem;
+      display: grid;
+      grid-gap: 1rem;
+      grid-auto-flow: column;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .dark #stickyheader {
+      background: #222;
+      color: #fff;
+    }
+
+    .section {
+      max-width: 90%;
+    }
+
+    #stickyheader a {
+      text-decoration: none;
+    }
+
+    .dark #stickyheader a {
+      color: #fff;
+    }
+
+    #autumnlink {
+      font-size: 120%;
+      color: inherit;
+    }
+
+    @media (min-width: 600px) {
+      #autumnlink {
+        font-size: 200%;
+        color: inherit;
+      }
+    }
+
+    #navbar {
+      display: grid;
+      grid-auto-flow: column;
+      align-items: center;
+      grid-gap: 1rem;
+    }
+
+    .nav-button {
+      background: #557dda;
+      color: #fff;
+      border-bottom: 3px solid #21212121;
+      cursor: pointer;
+      padding: 0.5rem 1rem;
+      border-radius: 0.33rem;
+      text-decoration: none;
+    }
+
+    .dark .nav-button {
+      border-color: #fff3;
+    }
+
+    .too-wide {
+      display: none;
+    }
+
+    @media (min-width: 700px) {
+      .too-wide {
+        display: initial;
+      }
+    }
+
+    .way-too-wide {
+      display: none;
+    }
+
+    @media (min-width: 1000px) {
+      .way-too-wide {
+        display: initial;
+      }
+    }
+
+    .dark .nav-button {
+      background: #2f56af;
+    }
+
+    #left-navbar {
+      display: grid;
+      grid-auto-flow: column;
+      align-items: center;
+      grid-gap: 2rem;
+    }
+
+    #darkmode-button {
+      display: none;
+      cursor: pointer;
+      border-radius: 0.33rem;
+      user-select: none;
+      -webkit-user-select: none;
+    }
+
+    @media (min-width: 500px) {
+      #darkmode-button {
+        display: initial;
+      }
+    }
+
+    #hero {
+      background: linear-gradient(to right, #decb87, #bbd690);
+      padding: 7vmin 1rem;
+      display: grid;
+      grid-gap: 1rem;
+      /* grid-auto-flow: column; */
+      justify-content: center;
+      align-items: center;
+      justify-items: center;
+    }
+
+    .dark #hero {
+      /* you mean like batman? */
+      background: linear-gradient(to right, #90771e, #1d5d11);
+      color: #fff;
+    }
+
+    #hero-title-group {
+      display: grid;
+      align-items: center;
+      grid-gap: 1em;
+      /* justify-items: center;
+      text-align: center; */
+    }
+
+    @media (min-width: 500px) {
+      #hero-title-group {
+        grid-auto-flow: column;
+        /* justify-items: unset;
+        text-align: unset; */
+      }
+    }
+
+    #hero-title {
+      /* font-weight: bold; */
+      font-size: 300%;
+    }
+
+    #hero-subtitle {
+      /* font-weight: bold; */
+      font-size: 150%;
+      max-width: 14em;
+      line-height: 1.4;
+    }
+
+    .hero-regex {
+      opacity: 0.33;
+    }
+
+    #hero-words {
+      display: inline-grid;
+      grid-gap: 1rem;
+    }
+
+    #hero-buttons {
+      display: inline-grid;
+      grid-auto-flow: column;
+      grid-gap: 2rem;
+    }
+
+    .hero-button {
+      display: inline-grid;
+      justify-items: center;
+      grid-gap: 1rem;
+    }
+
+    .hero-button-title {
+      color: #fff;
+      background: #14a933;
+      border-bottom: 3px solid #21212121;
+      border-radius: 0.4rem;
+      padding: 0.75rem 1.75rem;
+      text-decoration: none;
+
+      font-size: 120%;
+    }
+
+    .dark .hero-button-title {
+      /* background: #537add; */
+      /* border-bottom: 3px solid #00000077; */
+    }
+
+    .hero-button-title+span {
+      /* font-weight: bold; */
+    }
+
+    .main-screenshot {
+      width: 90%;
+      max-width: 600px;
+    }
+
+    #basic-explanation {
+      max-width: 90%;
+      text-align: center;
+      font-size: 120%;
+      margin: 0 auto;
+      padding: 3rem 0;
+      display: grid;
+      grid-gap: 1rem;
+    }
+
+    #reasons {
+      width: 77rem;
+      max-width: 90%;
+      margin: 0 auto;
+      padding: 3rem 0;
+      display: grid;
+      grid-gap: 2rem;
+    }
+
+    hr {
+      width: 90%;
+      background: #0003;
+      height: 1px;
+      border: none;
+      margin: 0 auto;
+    }
+
+    .dark hr {
+      background: #fff3;
+    }
+
+    @media (min-width: 600px) {
+      #reasons {
+        grid-template-columns: 1fr 1fr 1fr;
+      }
+    }
+
+    .reason {
+      display: grid;
+      grid-gap: 1rem;
+      align-content: baseline;
+    }
+
+    .reason-title {
+      font-size: 150%;
+    }
+
+    .reason-body {
+      line-height: 1.4;
+    }
+
+    #examples {
+      display: grid;
+      grid-gap: 1rem;
+
+      /* max-width: 30rem; */
+      width: 90%;
+      margin: 2rem auto;
+    }
+
+    #examples-title {
+      font-weight: bold;
+      font-size: 150%;
+    }
+
+    #examples-list {
+      margin-top: 1rem;
+      display: grid;
+      grid-gap: 2rem;
+      align-items: start;
+    }
+
+    @media (min-width: 40em) {
+      #examples-list {
+        grid-template-columns: repeat(2, 1fr);
+      }
+    }
+
+    @media (min-width: 80em) {
+      #examples-list {
+        grid-template-columns: repeat(3, 1fr);
+      }
+    }
+
+    @media (min-width: 120em) {
+      #examples-list {
+        grid-template-columns: repeat(4, 1fr);
+      }
+    }
+
+    .example {
+      display: grid;
+      grid-gap: 0.5rem;
+    }
+
+    .example-title {
+      font-weight: bold;
+    }
+
+    .example-body {
+      /* margin-left: 1rem; */
+    }
+
+    .example-show-code-button {
+      -webkit-user-select: none;
+      cursor: pointer;
+      user-select: none;
+      background: #ddd;
+      /* color: #fff; */
+      border: none;
+      border-radius: 0.33rem;
+      padding: 0.25rem;
+      font-size: 75%;
+    }
+
+    .dark .example-show-code-button {
+      background: #999;
+    }
+
+    .example-code {
+      overflow: auto;
+      background: #00000009;
+      padding: 1rem;
+      border-radius: 0.33rem;
+    }
+
+    .dark .example-code {
+      background: #00000022;
+    }
+
+    .example-code.hidden {
+      display: none;
+    }
+
+    #quicklinks {
+      margin: 2rem 0;
+      display: grid;
+      grid-gap: 2rem;
+      justify-content: center;
+      font-size: 150%;
+    }
+
+    @media (min-width: 450px) {
+      #quicklinks {
+        grid-auto-flow: column;
+      }
+    }
+
+    .quicklink {
+      color: #0078d4;
+      /* text-decoration: none; */
+      /* border-bottom: 1px dashed currentColor; */
+    }
+
+    .quicklink:hover {
+      /* text-decoration: underline; */
+      /* border-bottom-style: solid; */
+    }
+
+    .dark .quicklink {
+      color: #41adff;
+    }
+
+    #features {
+      display: grid;
+      /* grid-auto-flow: column; */
+      grid-gap: 5rem;
+      justify-content: center;
+
+      max-width: 90%;
+      margin: 2rem auto;
+    }
+
+    .dark #features {
+      color: #fff;
+    }
+
+    .feature {
+      display: grid;
+      align-items: center;
+      grid-gap: 2rem;
+    }
+
+    @media (min-width: 800px) {
+      .feature {
+        grid-auto-flow: column;
+      }
+    }
+
+    .feature:nth-child(2n) img {
+      grid-column: 1;
+    }
+
+    .feature-desc {
+      display: grid;
+      grid-gap: 1rem;
+      max-width: 20em;
+    }
+
+    .feature-header {
+      font-weight: bold;
+      font-size: 150%;
+    }
+
+    .feature-body {
+      line-height: 1.5;
+    }
+
+    #content {
+      background: #fff;
+      color: #000;
+    }
+
+    .dark #content {
+      background: #3c3c3c;
+      color: #fff;
+    }
+
+    #bottom-buttons {
+      display: grid;
+      justify-content: center;
+      grid-gap: 2rem;
+      padding: 4rem 1rem;
+    }
+
+    @media (min-width: 500px) {
+      #bottom-buttons {
+        grid-auto-flow: column;
+      }
+    }
+
+    #pagefooter {
+      font-size: 80%;
+      color: #555;
+      text-align: center;
+      padding: 1rem;
+      margin: 3rem;
+
+      display: grid;
+      /* grid-auto-flow: column; */
+      grid-gap: 0.5rem;
+      justify-content: center;
+    }
+
+    .dark #pagefooter {
+      color: #bbb;
+    }
+
+    .dark #pagefooter a {
+      color: #75bdff;
+    }
+
+    .screenshot {
+      border-radius: 0.33rem;
+      box-shadow: 0px 2px 8px 1px #0003;
+      max-width: 90%;
+    }
+
+    .dark .screenshot {
+      box-shadow: 0px 0px 0px 1px #000d;
+    }
+
+    .dark .light-only {
+      display: none;
+    }
+
+    html:not(.dark) .dark-only {
+      display: none;
+    }
+
+    #buy-good .buy-response-inner {
+      background: #0b841f;
+      color: #fff;
+    }
+
+    #buy-bad .buy-response-inner {
+      background: #ad502d;
+      color: #fff;
+    }
+
+    .buy-response {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+
+      z-index: 100;
+
+      display: none;
+      justify-content: center;
+      align-items: center;
+    }
+
+    #licenseUrl {
+      color: #fbff7e;
+    }
+
+    .buy-response-inner {
+      border-radius: 0.4rem;
+      padding: 1rem 2rem;
+      line-height: 1.5;
+      box-shadow: 0px 3px 7px 1px #0005;
+      margin: 1rem;
+      display: grid;
+      grid-gap: 1.5rem;
+    }
+
+    .buy-response-inner a {
+      color: inherit;
+    }
+
+    code {
+      font-family: Menlo, monspace, monospace;
+    }
+
+    .video-play-thumbnail {
+      text-align: center;
+      position: relative;
+      display: inline-block;
+      cursor: pointer;
+    }
+
+    .video-play-thumbnail:before {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      -webkit-transform: translate(-50%, -50%);
+      content: "\f01d";
+      font-family: FontAwesome;
+      font-size: 100px;
+      color: #fff;
+      opacity: .8;
+      text-shadow: 0px 0px 40px #000c;
+    }
+
+    .video-play-thumbnail:hover:before {
+      color: #eee;
+    }
+
+    #donamount {
+      font-family: monospace, monospace;
+      font-size: inherit;
+    }
+  </style>
+</head>
+
+<body>
+
+  <header id="stickyheader">
+    <div id="left-navbar">
+      <a id="autumnlink" href=".">Autumn</a>
+
+      <a class="way-too-wide quicklink" href="#see-examples">Examples</a>
+      <a class="way-too-wide quicklink" href="#see-features">Features</a>
+      <a class="too-wide quicklink" href="docs-preview">Preview API</a>
+
+    </div>
+    <div id="navbar">
+      <span id="darkmode-button" onclick="toggleDarkmode()">
+        Show <span id="dark-mode-word">Dark</span> Mode
+        <svg xmlns:svg="http://www.w3.org/2000/svg" xmlns="http://www.w3.org/2000/svg" version="1.0" width="12"
+          height="12" viewBox="0 0 12 12" xml:space="preserve">
+          <g>
+            <circle cx="6" cy="6" r="5.724" />
+            <rect width="12" height="12" x="0" y="0" style="fill:none" />
+            <g>
+              <path d="M 1.793,6 C 1.793,8.322 3.677,10.206 6,10.206 L 6,1.793 C 3.677,1.793 1.793,3.677 1.793,6 z "
+                style="fill:white" />
+            </g>
+          </g>
+        </svg>
+      </span>
+      <a class='nav-button' href="https://github.com/apandhi/Autumn/releases">Download<span class="too-wide"></span></a>
+    </div>
+  </header>
+
+  <div id="hero">
+    <div id="hero-title-group">
+      <img src="assets/appicon.png" alt="App Icon">
+      <div id="hero-words">
+        <div id="hero-title">Autumn</div>
+        <div id="hero-subtitle">The macOS window manager for JavaScript hackers</div>
+      </div>
+    </div>
+    <div class="video-play-thumbnail" onclick="playVideo()">
+      <img class="main-screenshot dark-only" src="assets/app-dark.png" alt="App Screenshot">
+      <img class="main-screenshot light-only" src="assets/app-light.png" alt="App Screenshot">
+    </div>
+    <div id="hero-buttons">
+      <div class="hero-button">
+        <a class="hero-button-title" href="https://github.com/apandhi/Autumn/releases">Download</a>
+      </div>
+    </div>
+    <!-- <div>
+      <iframe width="560" height="315" src="https://www.youtube.com/embed/jSE5E-JkSrA" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture"
+        allowfullscreen></iframe>
+    </div> -->
+    <div style="max-width: 40em; border-top: 1px solid currentColor; padding-top: 1em; margin-top: 1em">
+      <h2>Important Notice:</h2>
+      <br>
+      <p>Autumn is being made open source.</p>
+      <br>
+      <p>Here is the <a href="https://github.com/apandhi/Autumn">Github repo</a>.</p>
+      <br>
+      <p>For more information, see <a href='/blog/2019-03-25-autumn-macos-window-manager-now-open-source.html'>this blog post</a> from March 25, 2019.</p>
+    </div>
+  </div>
+
+  <div id="content">
+
+    <div id="basic-explanation">
+      <p><b>Design</b> your own window manager,</p>
+      <p>using an <b>embedded IDE</b>,</p>
+      <p>JavaScript and <b>TypeScript</b> support,</p>
+      <p>a live <b>developer console</b>,</p>
+      <p>and <b>built-in documentation</b>.</p>
+      <nav id="quicklinks">
+        <a class="quicklink" href="#see-examples">Examples</a>
+        <a class="quicklink" href="#see-features">Features</a>
+        <a class="quicklink" href="docs-preview">Preview API</a>
+      </nav>
+    </div>
+
+    <hr>
+
+    <div id="reasons">
+      <div class="reason">
+        <div class="reason-title">Increase your productivity</div>
+        <div class="reason-body">Window managers are one of <b>the hacker's secrets</b> to increased productivity.
+          Manually managing windows takes small but real amounts of concentration away from more important matters.
+          Over time that adds up. <b>Window managers relieve you</b> of that by doing all the moving and positioning
+          for you.</div>
+      </div>
+      <div class="reason">
+        <div class="reason-title">Completely customizable</div>
+        <div class="reason-body">Most window managers give you pre-designed hotkeys that move windows in simplistic,
+          often unhelpful ways. They don't adapt to your preferences or your behavior. Autumn puts the <b>control back
+            in your hands</b>, by allowing you to shape your very own customized window manager through
+          <b>experimentation</b>.</div>
+      </div>
+      <div class="reason">
+        <div class="reason-title">All-in-one IDE experience</div>
+        <div class="reason-body">Autumn comes with everything you need built-in, including a <b>state-of-the-art
+            IDE</b>,
+          embedded <b>searchable documentation</b>, and a <b>developer console</b>, so you can explore all that Autumn
+          can do for you with complete ease, and experiment without losing your place or your train of thought.</div>
+      </div>
+    </div>
+
+    <hr>
+
+    <div id="see-examples"></div>
+    <div id="examples">
+      <div id="examples-title">Things you can do with Autumn</div>
+      <div id="examples-body">Here are some sample code snippets that demonstrate the kinds of capabilities Autumn
+        gives
+        you:</div>
+      <div id="examples-list">
+
+        <div class="example">
+          <div class="example-title">Keep your Mac from sleeping while an app is open</div>
+          <div class="example-body">As long as "Dictionary" is open, your Mac will not fall sleep! This can be altered
+            to
+            use other events, such as connecting to a specific Wifi network, or when a window with a specific title is
+            open.</div>
+          <div><button class="example-show-code-button">Show code</button></div>
+          <pre class="example-code hidden">
+App.onAppLaunched = (app) => {
+  if (app.name === 'Dictionary') {
+    console.log(`${app.name} has opened. Preventing sleep.`);
+    const allowSleep = Power.preventSleep();
+    app.onTermination = () => {
+      console.log(`${app.name} has quit. Allowing sleep again.`);
+      allowSleep();
+    };
+  }
+}
+          </pre>
+        </div>
+
+        <div class="example">
+          <div class="example-title">Make your windows dance in place!</div>
+          <div class="example-body">This is actually in the demo video up top, and I put it there because it's super
+            fun,
+            even though it's probably completely impractical. Try it out to get the full effect.</div>
+          <div><button class="example-show-code-button">Show code</button></div>
+          <pre class="example-code hidden">
+function dance(win: Window) {
+  const f = win.position();
+  const w = (Math.random() * 0.6 + 0.4) * 200;
+  const h = (Math.random() * 0.6 + 0.4) * 200;
+  // const h = w; // this makes it a circle
+  const r = 7;
+  setInterval(() => {
+    const t = new Date().getTime();
+    win.setPosition({
+      x: f.x + (Math.cos(t / w) * r),
+      y: f.y + (Math.sin(t / h) * r),
+    });
+  }, 50);
+}
+
+Window.visibleWindows().forEach(dance);
+Window.onWindowOpened = dance;
+          </pre>
+        </div>
+
+        <div class="example">
+          <div class="example-title">Show sleep-time when your computer wakes from sleep</div>
+          <div class="example-body">This example demonstrates that you can run custom code in response to hardware
+            events,
+            such as your computer going to sleep or waking, a USB device being connected or disconnected, and screens
+            being added or removed.</div>
+          <div><button class="example-show-code-button">Show code</button></div>
+          <pre class="example-code hidden">
+
+let sleepTime: number;
+Power.onSleep = () => {
+  const now = new Date();
+  sleepTime = now.getTime();
+  console.log(`Good night! Sleeping at ${now.toLocaleString()}.`);
+};
+
+Power.onWake = () => {
+  const now = new Date();
+  let time = Math.floor((now.getTime() - sleepTime) / 1000);
+  const delay = 7; // seconds
+  alert("Good morning!", delay);
+  alert(`It's ${now.toLocaleString()}.`, delay);
+  alert(`Computer slept for ${hhmmss(time)}.`, delay);
+}
+
+function hhmmss(time) {
+  const s = time % 60;
+  time = Math.floor(time / 60);
+  const m = time % 60;
+  time = Math.floor(time / 60);
+  const h = time;
+  return [h, m, s].map(padWithZeroes).join(':');
+}
+
+function padWithZeroes(n: number) {
+  return n.toString().padStart(2, '0');
+}
+
+            </pre>
+        </div>
+
+        <div class="example">
+          <div class="example-title">Full-fledged window manager in just a few lines of code!</div>
+          <div class="example-body">This is the exact code that I use every day to manage my windows, verbatim. It's a
+            complete window manager that works by dividing your screen up into a logical "grid" of rows and columns,
+            and moving your windows so that they fit into "cells" on that grid.</div>
+          <div><button class="example-show-code-button">Show code</button></div>
+          <pre class="example-code hidden">
+const { Command, Control, Option, Shift } = Hotkey.Mods;
+
+const grid = new GridWM();
+grid.rows = localStorage.getItem('rows') as number || 2;
+grid.cols = localStorage.getItem('cols') as number || 6;
+
+Hotkey.activate(Command | Control | Option, 'h', () => grid.moveLeft());
+Hotkey.activate(Command | Control | Option, 'l', () => grid.moveRight());
+Hotkey.activate(Command | Control | Option, 'k', () => { grid.shrinkFromBelow(); grid.moveUp() });
+Hotkey.activate(Command | Control | Option, 'j', () => { grid.shrinkFromAbove(); grid.moveDown() });
+
+Hotkey.activate(Command | Shift | Option, 'h', () => Window.focusedWindow().focusNext(Window.Dir.Left));
+Hotkey.activate(Command | Shift | Option, 'l', () => Window.focusedWindow().focusNext(Window.Dir.Right));
+Hotkey.activate(Command | Shift | Option, 'k', () => Window.focusedWindow().focusNext(Window.Dir.Up));
+Hotkey.activate(Command | Shift | Option, 'j', () => Window.focusedWindow().focusNext(Window.Dir.Down));
+
+Hotkey.activate(Command | Control | Option, 'o', () => grid.growRight());
+Hotkey.activate(Command | Control | Option, 'i', () => grid.shrinkFromRight());
+Hotkey.activate(Command | Control | Option, 'u', () => grid.fillCurrentColumn());
+Hotkey.activate(Command | Control | Option, 'm', () => grid.moveToCellGroup(grid.fullScreenCellGroup()));
+
+Hotkey.activate(Command | Control | Option, 'c', () => Window.focusedWindow().centerOnScreen());
+
+Hotkey.activate(Command | Control | Option, ';', () => grid.align());
+Hotkey.activate(Command | Control | Option, "'", () => grid.alignAll());
+
+Hotkey.activate(Command | Control | Option, 'n', () => grid.moveToNextScreen());
+Hotkey.activate(Command | Control | Option, 'p', () => grid.moveToPreviousScreen());
+
+Hotkey.activate(Command | Control | Option, '-', () => changeWidthBy(-1));
+Hotkey.activate(Command | Control | Option, '=', () => changeWidthBy(+1));
+
+function changeWidthBy(n) {
+  grid.cols = Math.max(1, grid.cols + n);
+  localStorage.setItem('cols', grid.cols);
+  alert(`Grid width is now ${grid.cols}`);
+  grid.alignAll();
+}
+
+alert(`Running GridWM example, rows = ${grid.rows}, cols = ${grid.cols}`);
+            </pre>
+        </div>
+
+      </div>
+    </div>
+
+    <hr>
+
+    <div id="see-features"></div>
+    <div id="features">
+      <div class="feature">
+        <div class="feature-desc">
+          <span class="feature-header">Embedded IDE</span>
+          <span class="feature-body">Autumn utilizes the same editor as VS Code, for features like
+            <b>auto-completion</b>,
+            in-line <b>type-checking</b>, <b>in-line documentation</b>, and all the other features that make modern
+            IDEs, well, modern.</span>
+        </div>
+        <img class="screenshot dark-only" src="assets/editor-dark.png" alt="App Icon">
+        <img class="screenshot light-only" src="assets/editor-light.png" alt="App Icon">
+      </div>
+      <div class="feature">
+        <div class="feature-desc">
+          <span class="feature-header">Built-in documentation</span>
+          <span class="feature-body">Easily explore all of Autumn's capabilities without losing context using the
+            built-in documentation viewer, complete with <b>full-text search</b>, quick access via <b>reference
+              links</b>,
+            and <b>syntax highlighting</b>.</span>
+        </div>
+        <img class="screenshot dark-only" src="assets/docs-dark.png" alt="App Icon">
+        <img class="screenshot light-only" src="assets/docs-light.png" alt="App Icon">
+      </div>
+      <div class="feature">
+        <div class="feature-desc">
+          <span class="feature-header">Developer console</span>
+          <span class="feature-body">Interact with <b>live objects</b>, inspect their properties, and <b>explore the
+              API</b> while it's running, from the comfort of a <b>strangely familiar console</b>.</span>
+        </div>
+        <img class="screenshot dark-only" src="assets/console-dark.png" alt="App Icon">
+        <img class="screenshot light-only" src="assets/console-light.png" alt="App Icon">
+      </div>
+      <div class="feature">
+        <div class="feature-desc">
+          <span class="feature-header">Comprehensive APIs</span>
+          <span class="feature-body">Autumn lets you automate a wide variety of tasks, such as <b>arranging windows</b>,
+            performing actions in response to <b>USB</b> and <b>Wifi</b> events, binding <b>custom hotkeys</b>, moving
+            your <b>mouse cursor</b>, and even <b>changing your screen's brightness</b>.<br><br><a
+              href="docs-preview">Preview API</a></span>
+        </div>
+        <img class="screenshot dark-only" src="assets/api-dark.png" alt="App Icon">
+        <img class="screenshot light-only" src="assets/api-light.png" alt="App Icon">
+      </div>
+    </div>
+
+    <hr>
+
+    <div id="bottom-buttons">
+      <a class='nav-button' href="https://github.com/apandhi/Autumn/releases">Download</a>
+    </div>
+
+  </div>
+
+  <footer id="pagefooter">
+  </footer>
+
+  <script>
+    let dark = !!localStorage.getItem('darkmode');
+
+    setDarkmode(dark);
+    setTimeout(() => {
+      setDarkmode(dark);
+    }, 0);
+
+    function setDarkmode(dark) {
+      localStorage.setItem('darkmode', dark ? 'on' : '');
+      document.documentElement.classList.toggle('dark', dark);
+      document.getElementById('dark-mode-word').innerText = dark ? 'Light' : 'Dark';
+      monaco.editor.setTheme(dark ? 'vs-dark' : 'vs');
+    }
+
+    function toggleDarkmode() {
+      dark = !dark;
+      setDarkmode(dark);
+    }
+
+    function playVideo() {
+      lity('https://www.youtube.com/watch?v=jSE5E-JkSrA');
+    }
+
+    Array.from(document.querySelectorAll('.example-code')).forEach(el => {
+      el.innerHTML = el.innerHTML.trim();
+      monaco.editor.colorizeElement(el, { theme: 'vs', mimeType: 'typescript' });
+    });
+
+    Array.from(document.querySelectorAll('.example-show-code-button')).forEach(but => {
+      but.addEventListener('click', () => {
+        const target = but.parentElement.nextElementSibling;
+        target.classList.toggle('hidden');
+        const hidden = target.classList.contains('hidden');
+        but.innerText = hidden ? 'Show code' : 'Hide code';
+      });
+    });
+
+    Array.from(document.querySelectorAll('.mtk22')).forEach(pseudolink => {
+      if (pseudolink.style.cursor === 'pointer') {
+        const name = pseudolink.innerText.trim();
+        pseudolink.onclick = () => window.location.hash = name;
+      }
+    });
+  </script>
+
+</body>
+
+</html>
