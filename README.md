@@ -6,7 +6,7 @@ Autumn is a MacOS window manager built for javascript hackers. It was originally
 
 # Installing / Getting started
 
-To get started, you can download the latest release from the [releases tab](/releases/latest)
+To get started, you can download the latest release from the [releases tab](https://github.com/apandhi/Autumn/releases)
 
 ## Developing
 
